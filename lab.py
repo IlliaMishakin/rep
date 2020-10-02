@@ -3,23 +3,23 @@ from collections import namedtuple
 book = namedtuple('book', 'name, author, year, length')
 note = []
 
+def get_index(name):
+    try:
+        index = [True if x.name==name else False for x in note ].index(True)
+    except ValueError as e:
+        print('Nothing was found')
+        return None
+    return index
+
 def add(name, author, year, length):
     note.append(book(name, author, year, length))
 
 def delete(name):
-    try:
-        index = [True for x in note if x.name==name].index(True)
-    except ValueError as e:
-        print('Book was not found')
-        return None
+    index = get_index(name)
     note.pop(index)
 
 def edit(name, feature, value):
-    try:
-        index = [True for x in note if x.name==name].index(True)
-    except ValueError as e:
-        print('Book was not found')
-        return None
+    index = get_index(name)
     if feature == 'name':
         note[index] = note[index]._replace(name=value)
     elif feature == 'author':
@@ -40,21 +40,21 @@ def loop():
                    \nSHOW DB: show all books')
         elif command.startswith('ADD') == True:
             try:
-                name, author, year, length = command[len('ADD'):].split(', ')
+                name, author, year, length = tuple(command[len('ADD')+1:].split(', '))
             except ValueError as e:
                 print('Wrong syntax')
                 continue
             add(name, author, year, length)
         elif command.startswith('DELETE') == True:
             try:
-                name = command[len('DELETE'):].split(', ')
+                name, = tuple(command[len('DELETE')+1:].split(', '))
             except ValueError as e:
                 print('Wrong syntax')
                 continue
             delete(name)
         elif command.startswith('EDIT') == True:
             try:
-                name, feature, value = command[len('EDIT'):].split(', ')
+                name, feature, value = tuple(command[len('EDIT')+1:].split(', '))
             except ValueError as e:
                 print('Wrong syntax')
                 continue
