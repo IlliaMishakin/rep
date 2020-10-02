@@ -7,7 +7,7 @@ def get_index(name):
     try:
         index = [True if x.name==name else False for x in note ].index(True)
     except ValueError as e:
-        print('Nothing was found')
+        print(f'{name} was not found')
         return None
     return index
 
@@ -16,28 +16,37 @@ def add(name, author, year, length):
 
 def delete(name):
     index = get_index(name)
-    note.pop(index)
+    try:
+        note.pop(index)
+    except TypeError as e:
+        print('Nothing to delete')
 
 def edit(name, feature, value):
     index = get_index(name)
-    if feature == 'name':
-        note[index] = note[index]._replace(name=value)
-    elif feature == 'author':
-        note[index] = note[index]._replace(author=value)
-    elif feature == 'year':
-        note[index] = note[index]._replace(year=value)
-    elif feature == 'length':
-        note[index] = note[index]._replace(length=value)
+    try:
+        if feature == 'name':
+            note[index] = note[index]._replace(name=value)
+        elif feature == 'author':
+            note[index] = note[index]._replace(author=value)
+        elif feature == 'year':
+            note[index] = note[index]._replace(year=value)
+        elif feature == 'length':
+            note[index] = note[index]._replace(length=value)
+        else:
+            print(f'No feature called {feature}')
+    except TypeError as e:
+        print('Nothing to edit')
 
 
 def loop():
+    print('Type in a command or "COMMAND LIST"')
     while True:
-        command = input('Type in a command or "COMMAND LIST"\n-->')
+        command = input('-->')
         if command == 'COMMAND LIST':
             print('ADD book_name, author, year, length: add book to database\
                    \nDELETE book_name: delete book from database\
                    \nEDIT book_name, book_feature, value: edit book feature\
-                   \nSHOW DB: show all books')
+                   \nSHOW: show all books')
         elif command.startswith('ADD') == True:
             try:
                 name, author, year, length = tuple(command[len('ADD')+1:].split(', '))
