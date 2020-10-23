@@ -1,5 +1,14 @@
 import pandas as pd
 
+def count_price_change(now, year, df):
+    x = df.Price[now] - df.Price[year]
+
+    return x
+
+def count_price_change_percent(now, year, df):
+    x = df.Price[now]/df.Price[year]*100
+    return x
+
 cols = pd.MultiIndex.from_product([['Price'], [2007, 2008, 2011, 2017]])
 cols = cols.insert(0, ('Product code'))
 cols = cols.insert(5, ('Market'))
@@ -11,7 +20,7 @@ avarage_prices = pd.DataFrame([[101, 101, 101, 101, 102, 102, 102, 103, 103, 103
                                [2.03, 2.08, 2.04, 2.03, 2.4, 2.3, 2.03, 2.04, 2, 2.35, 4.52, 4.5, 4.45, 4.56, 4.53, 4.55, 5.77, 5.75, 5.75],
                                [69.5, 70, 40, 39.8, 45, 44.6, 69.5, 40, 68, 44.8, 30, 29.6, 29.6, 25, 25, 25, 70, 68.9, 69],
                                ['Сінний', 'Бесарабський', "Лук'янівський", 'Сінний', 'Бесарабський', "Лук'янівський", 'Сінний', 'Бесарабський', "Лук'янівський",
-                                'Сінний', 'Бесарабський', "Лук'янівський", 'Сінний', 'Бесарабський', "Лук'янівський", 'Сінний']], cols).T
+                                'Сінний', 'Бесарабський', "Лук'янівський", 'Сінний', 'Бесарабський', "Лук'янівський", 'Сінний', 'Бесарабський', "Лук'янівський", 'Сінний']], cols).T
 
 
 print(avarage_prices)
@@ -20,4 +29,27 @@ product_directory = pd.DataFrame([[101, 102, 103, 201, 202, 203],
                                   ['Картопля', 'Капуста', 'Цибуля', 'Помідори', 'Огірки', 'Яблука'],
                                   ['кг.', 'кг.', 'кг.', 'кг.', 'кг.', 'кг.']], ['Product code', 'Product name', 'Unit']).T
 
-print(product_directory)
+res_cols = pd.MultiIndex.from_tuples([('Markets', '', ''),
+                                      ('Product name', '', ''),
+                                      ('Price change', 2007, ''),
+                                      ('Price change', 2008, 'uah'), ('Price change', 2008, '% by 2007'),
+                                      ('Price change', 2011, 'uah'), ('Price change', 2011, '% by 2007'),
+                                      ('Price change', 2017, 'uah'), ('Price change', 2017, '% by 2007')])
+
+prod_name = pd.Series(avarage_prices.replace(product_directory['Product code'].to_list(), product_directory['Product name'].to_list())['Product code'])
+prod_name.name = 'Product name'
+
+result = pd.DataFrame([avarage_prices['Market'],
+                       prod_name,
+                       avarage_prices.Price[2007],
+                       count_price_change(2008, 2007, avarage_prices),
+                       count_price_change_percent(2008, 2007, avarage_prices),
+                       count_price_change(2011, 2008, avarage_prices),
+                       count_price_change_percent(2011, 2008, avarage_prices),
+                       count_price_change(2017, 2011, avarage_prices),
+                       count_price_change_percent(2017, 2011, avarage_prices)], res_cols).T
+
+
+
+count_price_change(2008, 2007, avarage_prices)
+print(result)
